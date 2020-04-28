@@ -1,11 +1,12 @@
 # OneList - Written in GoLang
 - 支持 国际版, 个人免费版(家庭版), 中国版(世纪互联).
-- 支持同时列出多个盘的目录.(要求每个盘的`SubPath`唯一)
+- 支持同时列出多个盘的目录.(同时挂载多个网盘或单个网盘挂载成多个`SubPath`,要求每个`SubPath`唯一)
 - 支持文件夹内超过 200 个项目
 - 支持后台自动刷新缓存.
 - 支持路径中含有特殊字符.
 - 支持使用不同目录使用不同账户密码加密(HTTP 401).
 - 支持隐藏目录和文件(跳过缓存).
+- 支持自定义 ClientID 和 SecretKey .
 - 数据储存在内存中,响应更加迅速.
 
 ## 授权
@@ -80,7 +81,7 @@ Usage of OneList:
         Index file. (default "index.html")
   -json
         // 开关
-        // 数据以 json 形式输出
+        // 数据以 json 形式输出当前目录数据
         Output json.
   -cn
         // 开关
@@ -90,6 +91,17 @@ Usage of OneList:
         // 开关
         // 授权个人版(家庭版), 需要此参数.
         OneDrive by Microsoft.
+  -C string
+        // 覆写所有预置的 Client ID. (不建议新手使用此参数)
+        Set  Client ID. [Overwrite all clientId]
+  -S string
+        // 覆写所有预置的 Secret Key. (不建议新手使用此参数)
+        Set Secret Key. [Overwrite all secretKey]
+  -P string
+        // 设置反代域名.此设置将全部流量定向到某个服务器或CDN,用于隐藏全局域名或者加速.
+        // 每组以";"相间隔. 源域名与目标域名以"|"间隔. 可以设置多组.
+        // 默认为空,使用时不要带中括号. (不建议新手使用此参数)
+        Set Proxy Domain. ["x.sharepoint.com|domain.com;x.sharepoint.cn|domain.cn;..."]
 ```
 
 ## 运行
@@ -101,7 +113,7 @@ $ OneList -bind 0.0.0.0 -port 80
 ```
 
 ## 注意
-- 打开空文件夹, 会提示 No Found.
+- 在初次缓存过程中或者打开空文件夹, 会提示 No Found.
 - 请使用 UTF-8 编码模式手动编辑 config.json 文件.
 
 ## Nginx 反代配置
@@ -110,6 +122,18 @@ $ OneList -bind 0.0.0.0 -port 80
         proxy_set_header X-Real-IP $remote_addr;
         proxy_pass http://127.0.0.1:5288;
     }
+```
+
+## 后台运行及开机自启
+```
+# /path/to/OneList 为OneList的完整路径
+# 后台运行
+nohup /path/to/OneList -bind 0.0.0.0 -port 80 >/dev/null 2>&1 &
+
+# 开机自启并后台运行
+编辑 /etc/crontab 文件, 并添加下面一行并多按几个回车. (有些系统不留空行会出现意外)
+@reboot root nohup /path/to/OneList -bind 0.0.0.0 -port 80 >/dev/null 2>&1 &
+
 ```
 
 ## Client/Secret (~ 2299/12/31)
